@@ -1,0 +1,277 @@
+<div class="container" id="main-container">
+   <div class="row" style="align-items: flex-start; margin-bottom: 30px">
+      <form style="margin-right: 20px; margin-left: 20px;" class="form-inline my-2 my-lg-0">
+         <input type="search" (ngModelChange)="searchEmployees(key.value)" #key="ngModel" ngModel
+         name="key" id="searchName" class="form-control mr-sm-2" placeholder="Search employees...">
+      </form>
+      <div class="form-group align-center" style="margin-right: 150px;">
+         <select
+           id="status"
+           class="form-control"
+           #mySelect
+           (change)="dataChanged(mySelect.value)"
+           >
+           <option value="1" >Working</option>
+           <option value="0" >Offline</option>
+           <option value="-1" >Deleted</option>
+         </select>
+       </div>
+
+      <h3 style="margin-right: 230px; margin-left: 20px;">Employees: {{ employees?.length }} </h3>
+      <button class="btn btn-primary tooltips" color="primary" (click)="onOpenModal(null, 'add')"><i style="font-size: 20px;" class="fa fa-plus"></i>  
+         Add Employee
+      </button>
+   </div>
+  <div class="row">
+    <div *ngFor="let employee of employees" class="col-md-6 col-xl-3">
+       <div class="card m-b-40" style="width: 260px; height: 350px">
+         <div class="container containerStatus">
+            <div *ngIf="employee.statusID === 1" class="statusWorking">
+               <b>Working</b>
+            </div>
+            <div *ngIf="employee.statusID === 0" class="statusOffline">
+               <b>Offline</b>
+            </div>
+            <div *ngIf="employee.statusID === -1" class="statusDeleted">
+               <b>Deleted</b>
+            </div>
+         </div>
+          <div class="card-body row">
+             <div class="col-6">
+                <a><img src="{{employee?.imageUrl}}" alt="" class="img-fluid rounded-circle w-100"></a>
+             </div>
+             <div class="col-6 card-title align-self-center mb-0">
+                <h5>{{employee?.name}}</h5>
+                <p class="m-0">{{employee?.jobTitle}}</p>
+             </div>
+          </div>
+          <ul class="list-group list-group-flush">
+             <li class="list-group-item"><i class="fa fa-envelope float-right"></i>{{employee?.email}}</li>
+             <li class="list-group-item"><i class="fa fa-phone float-right"></i>Phone : {{employee?.phone}}</li>
+          </ul>
+          <div style="margin: 2px;">   
+            <div class="float-right btn-group btn-group-sm">
+               <a *ngIf="employee.statusID === -1" (click)="onOpenModal(employee, 'restore')" class="btn btn-warning tooltips" data-placement="top"><b>Khôi phục</b></a>
+            </div>
+             <div *ngIf="!(employee.statusID === -1)" class="float-right btn-group btn-group-sm">
+                  <a (click)="onOpenModal(employee, 'edit')" class="btn btn-primary tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
+                  <a (click)="onOpenModal(employee, 'delete')" class="btn btn-secondary tooltips" data-placement="top" data-original-title="Delete"><i class="fa fa-times"></i></a>
+             </div>
+          </div>
+       </div>
+    </div>
+  </div>
+  
+  <!-- Add Employee Modal -->
+  <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="addEmployeeModalLabel">Add employee</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form #addForm="ngForm" (ngSubmit)="onAddEmloyee(addForm)">
+               <div class="form-group row">
+                  <div class="col-sm-8">
+                     <label for="name">Name</label>
+                     <input type="text" ngModel name="name" class="form-control" id="name" placeholder="Name" required>
+                  </div>
+                  <div class="col-sm-4">
+                     <label for="dob">DOB</label>
+                     <input type="text" ngModel name="dob" class="form-control" id="dob" placeholder="DOB" required>
+                  </div>
+               </div>
+               <div class="form-group row">
+                  <div class="col-sm-8">
+                     <label for="email">Email Address</label>
+                     <input type="email" ngModel name="email" class="form-control" id="email" placeholder="Email" required>
+                  </div>
+                  <div class="col-sm-4">
+                     <label for="phone">Phone</label>
+                     <input type="text" ngModel name="phone" class="form-control" id="phone" placeholder="Phone" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="phone">Job title</label>
+                  <input type="text" ngModel name="jobTitle" class="form-control" id="jobTile" placeholder="Job title" required>
+               </div>
+               <div class="form-group">
+                     <label for="departmentID">Department</label>
+                     <select
+                        id="departmentID"
+                        name="departmentID"
+                        class="form-control"
+                        ngModel="{{listSelect[0].key}}"
+                     >
+                        <option *ngFor="let department of listSelect" [value]="department.key">{{department.value}}</option>
+                     </select>
+               </div>
+               <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea
+                     ngModel
+                     class="form-control"
+                     type="text"
+                     id="description"
+                     name="description"
+                  >
+                  </textarea>
+                  <!-- <input type="text" ngModel name="description" class="form-control" id="description" placeholder="Description" required> -->
+               </div>
+               <div class="form-group">
+                  <label for="phone">Image URL</label>
+                  <input type="text" ngModel name="imageUrl" class="form-control" id="imageUrl" placeholder="Image URL">
+               </div>
+               <div class="modal-footer">
+                  <button type="button" id="add-employee-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary" >Save changes</button>
+               </div>
+            </form>
+         </div>
+      </div>
+    </div>
+   </div>
+  
+  <!-- Edit Modal -->
+  <div class="modal fade" id="updateEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title" id="updateEmployeeModalLabel">Edit employee {{editEmployee?.name}}</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          <div class="modal-body">
+             <form #editForm="ngForm">
+               <div class="form-group row">
+                  <div class="col-sm-8">
+                     <label for="name">Name</label>
+                     <input type="text" ngModel="{{editEmployee?.name}}" name="name" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Name" required>
+                  </div>
+                  <div class="col-sm-4">
+                     <label for="dob">DOB</label>
+                     <input type="text" ngModel="{{editEmployee?.dob}}" name="dob" class="form-control" id="dob" placeholder="DOB" required>
+                  </div>
+               </div>
+               <div class="form-group row">
+                  <div class="col-sm-8">
+                     <label for="email">Email Address</label>
+                     <input type="email" ngModel="{{editEmployee?.email}}" name="email" class="form-control" id="email" placeholder="Email" required>
+                  </div>
+                  <div class="col-sm-4">
+                     <label for="phone">Phone</label>
+                     <input type="text" ngModel="{{editEmployee?.phone}}" name="phone" class="form-control" id="phone" name="phone" placeholder="Phone" required>
+                  </div>
+               </div>
+                <input type="hidden" ngModel="{{editEmployee?.id}}" name="id" class="form-control" id="id" placeholder="Email">
+                <input type="hidden" ngModel="{{editEmployee?.employeeCode}}" name="userCode" class="form-control" id="userCode" placeholder="Email">
+                <div class="form-group">
+                   <label for="phone">Job title</label>
+                   <input type="text" ngModel="{{editEmployee?.jobTitle}}" name="jobTitle" class="form-control" id="jobTitle" placeholder="Job title">
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-8">
+                     <label for="departmentID">Department</label>
+                     <select
+                        id="departmentID"
+                        name="departmentID"
+                        class="form-control"
+                        ngModel="{{editEmployee?.departmentID}}"
+                     >
+                        <option *ngFor="let department of listSelect" [value]="department.key">{{department.value}}</option>
+                     </select>
+                  </div>
+                  <div *ngIf="!(editEmployee?.statusID === -1)" class="col-sm-4">
+                     <label for="statusID">Status</label>
+                     <select
+                        [ngStyle]="editEmployee?.statusID !== 1 ? {'background-color': 'grey'} : {'background-color': 'yellow'} "
+                        id="statusID"
+                        name="statusID"
+                        class="form-control"
+                        ngModel="{{editEmployee?.statusID}}"
+                     >
+                        <option value="1" >Working</option>
+                        <option value="0" >Offline</option>
+                   </select>
+                  </div>
+               </div>
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea
+                     class="form-control"
+                     type="text"
+                     id="description"
+                     name="description"
+                     ngModel="{{editEmployee?.description}}"
+                  >
+                  </textarea>
+                  <!-- <input type="text" ngModel name="description" class="form-control" id="description" placeholder="Description" required> -->
+               </div>
+               <div class="form-group">
+                  <label for="phone">Image URL</label>
+                  <input type="text" ngModel="{{editEmployee?.imageUrl}}" name="imageUrl" class="form-control" id="imageUrl" placeholder="Image URL">
+               </div>
+                <div class="modal-footer">
+                   <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                   <button (click)="onUpdateEmloyee(editEmployee.id, editForm.value)" data-dismiss="modal" class="btn btn-primary" >Save changes</button>
+                </div>
+             </form>
+          </div>
+       </div>
+    </div>
+  </div>
+
+   <!-- Restore Modal -->
+   <div class="modal fade" id="restoreEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="restoreModelLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="restoreModelLabel">Restore employee</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body">
+               <p>Are you sure you want to restore employee <b>{{restoreEmployee?.name}}</b>?</p>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button (click)="onRestoreEmloyee(restoreEmployee?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+  
+  <!-- Delete Modal -->
+   <div class="modal fade" id="deleteEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="deleteModelLabel">Delete employee</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body">
+               <p>Are you sure you want to delete employee <b>{{deleteEmployee?.name}}</b>?</p>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button (click)="onDeleteEmloyee(deleteEmployee?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+  
+  <!-- Notification for no employees -->
+<div *ngIf="employees?.length == 0" class="col-lg-12 col-md-12 col-xl-12" style="margin-top: 50px">
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">NO EMPLOYEES!</h4>
+    <p>No Employees were found.</p>
+  </div>
+</div>

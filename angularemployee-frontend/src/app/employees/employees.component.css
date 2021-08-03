@@ -1,0 +1,47 @@
+input.ng-touched.ng-dirty.ng-invalid {
+    border: 2px solid red;
+}
+  
+textarea.ng-touched.ng-dirty.ng-invalid {
+    border: 2px solid red;
+}
+
+div.containerStatus {
+    margin: 4px 0 0 0;
+}
+
+div.statusWorking {
+    width: 35%;
+    border: 1.5px solid grey;
+    border-radius: 6px;
+    padding: 3px;
+    background-color: yellow;
+    float: right;
+    margin: auto;
+    padding: auto;
+    text-align: center;
+}
+
+div.statusOffline {
+    width: 35%;
+    border: 1.5px solid grey;
+    border-radius: 6px;
+    padding: 3px;
+    background-color: grey;
+    float: right;
+    margin: auto;
+    padding: auto;
+    text-align: center;
+}
+
+div.statusDeleted {
+    width: 35%;
+    border: 1.5px solid grey;
+    border-radius: 6px;
+    padding: 3px;
+    background-color: red;
+    float: right;
+    margin: auto;
+    padding: auto;
+    text-align: center;
+}
